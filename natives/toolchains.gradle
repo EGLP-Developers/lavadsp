@@ -6,8 +6,6 @@ task buildLinuxGlibc32 {}
 task buildLinuxGlibc64 {}
 task buildLinuxGlibcArm {}
 task buildLinuxGlibcAarch64 {}
-task buildLinuxMusl64 {}
-task buildLinuxMuslAarch64 {}
 task buildWin32 {}
 task buildWin64 {}
 
@@ -25,7 +23,7 @@ task buildWin {
 
 task buildLinux {
     dependsOn buildLinuxGlibc64, buildLinuxGlibc32, buildLinuxGlibcArm,
-            buildLinuxGlibcAarch64, buildLinuxMusl64
+            buildLinuxGlibcAarch64
 }
 
 static def platformName(p) {
@@ -42,8 +40,6 @@ def targetDirectory = [
         linux_glibc_x86_64: "linux-x86-64",
         linux_glibc_arm: "linux-arm",
         linux_glibc_aarch64: "linux-aarch64",
-        linux_musl_x86_64: "linux-musl-x86-64",
-        linux_musl_aarch64: "linux-musl-aarch64",
         windows_x86: "win-x86",
         windows_x86_64: "win-x86-64",
 ]
@@ -63,8 +59,6 @@ def tasksByTarget = [
         linux_glibc_x86_64:  buildLinuxGlibc64,
         linux_glibc_arm:     buildLinuxGlibcArm,
         linux_glibc_aarch64: buildLinuxGlibcAarch64,
-        linux_musl_x86_64:   buildLinuxMusl64,
-        linux_musl_aarch64:  buildLinuxMuslAarch64,
         windows_x86:         buildWin32,
         windows_x86_64:      buildWin64
 ]
@@ -93,9 +87,6 @@ project.ext.isWindows = { platform ->
 }
 project.ext.isUnix = { platform ->
     return isDarwin(platform) || isFreebsd(platform) || isLinux(platform)
-}
-project.ext.isMusl = { platform ->
-    return platformName(platform).startsWith("linux_musl_")
 }
 project.ext.isGlibc = { platform ->
     return platformName(platform).startsWith("linux_glibc_")
@@ -154,28 +145,6 @@ model {
                 staticLibArchiver.executable 'aarch64-linux-gnu-ar'
             }
         }
-        musl(Gcc) {
-            target("linux_musl_x86_64") {
-                cCompiler.executable 'x86_64-linux-musl-gcc'
-                cppCompiler.executable 'x86_64-linux-musl-g++'
-                linker.executable 'x86_64-linux-musl-g++'
-                staticLibArchiver.executable 'x86_64-linux-musl-ar'
-
-                cCompiler.withArguments { args -> args << '-static-libgcc' << '-static-libstdc++' }
-                cppCompiler.withArguments { args -> args << '-static-libgcc' << '-static-libstdc++' }
-                linker.withArguments { args -> args << '-static-libgcc' << '-static-libstdc++' }
-            }
-            target("linux_musl_aarch64") {
-                cCompiler.executable 'aarch64-linux-musl-gcc'
-                cppCompiler.executable 'aarch64-linux-musl-g++'
-                linker.executable 'aarch64-linux-musl-g++'
-                staticLibArchiver.executable 'aarch64-linux-musl-ar'
-
-                cCompiler.withArguments { args -> args << '-static-libgcc' << '-static-libstdc++' }
-                cppCompiler.withArguments { args -> args << '-static-libgcc' << '-static-libstdc++' }
-                linker.withArguments { args -> args << '-static-libgcc' << '-static-libstdc++' }
-            }
-        }
         freebsd(Clang) {
             target("freebsd_x86_64") {
                 def sysroot = freebsd_sysroot.getAbsolutePath()
@@ -218,14 +187,6 @@ model {
             operatingSystem "linux"
         }
         linux_glibc_aarch64 {
-            architecture "arm64"
-            operatingSystem "linux"
-        }
-        linux_musl_x86_64 {
-            architecture "x64_64"
-            operatingSystem "linux"
-        }
-        linux_musl_aarch64 {
             architecture "arm64"
             operatingSystem "linux"
         }
