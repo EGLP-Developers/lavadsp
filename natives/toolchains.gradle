@@ -144,6 +144,12 @@ model {
                 linker.executable 'aarch64-linux-gnu-g++'
                 staticLibArchiver.executable 'aarch64-linux-gnu-ar'
             }
+            /*target("windows_x86_64") { Doesnt work because of weird mingw output that Gradle can't parse
+                cCompiler.executable 'x86_64-w64-mingw32-gcc'
+                cppCompiler.executable 'x86_64-w64-mingw32-g++'
+                linker.executable 'x86_64-w64-mingw32-g++'
+                staticLibArchiver.executable 'x86_64-w64-mingw32-ar'
+            }*/
         }
         freebsd(Clang) {
             target("freebsd_x86_64") {

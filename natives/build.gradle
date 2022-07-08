@@ -91,7 +91,9 @@ model {
     }
 }
 
-
+task buildWindowsNatives(type: Exec) {
+    commandLine 'bash', './build.sh'
+}
 
 tasks.withType(LinkSharedLibrary) {
     def flavor = it.linkedFile.asFile.orNull.getParentFile().getName()
