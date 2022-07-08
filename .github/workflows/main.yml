@@ -44,7 +44,7 @@ jobs:
           name: linux-x86-natives
           path: src/main/resources/natives/*
   linux-arm-natives:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -82,6 +82,7 @@ jobs:
           name: linux-arm-natives
           path: src/main/resources/natives/*
   mac-natives:
+    if: "false"
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -139,7 +140,7 @@ jobs:
         if: steps.cache-natives.outputs.cache-hit != 'true'
         run: |
             mkdir freebsd_sysroot
-            curl -s https://download.freebsd.org/ftp/releases/amd64/11.4-RELEASE/base.txz \
+            curl -s http://ftp-archive.freebsd.org/pub/FreeBSD-Archive/old-releases/amd64/11.4-RELEASE/base.txz \
                 | tar -xJf - -C freebsd_sysroot ./lib ./usr/lib ./usr/libdata ./usr/include ./usr/share/keys ./etc
       - name: Build freebsd natives
         if: steps.cache-natives.outputs.cache-hit != 'true'
@@ -178,7 +179,8 @@ jobs:
           name: windows-natives
           path: src/main/resources/natives/*
   build:
-    needs: [linux-x86-natives, linux-arm-natives, mac-natives, freebsd-natives, windows-natives]
+    #needs: [linux-x86-natives, linux-arm-natives, mac-natives, freebsd-natives, windows-natives]
+    needs: [linux-x86-natives, linux-arm-natives, freebsd-natives, windows-natives]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -192,6 +194,7 @@ jobs:
           name: linux-arm-natives
           path: src/main/resources/natives/
       - uses: actions/download-artifact@v2
+        if: "false"
         with:
           name: mac-natives
           path: src/main/resources/natives/
